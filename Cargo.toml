@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+
+members = [
+  "day1",
+  "lib_aoc"]
+
+[workspace.dependencies]
+lib_aoc = { path = "./lib_aoc"}
