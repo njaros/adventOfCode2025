@@ -89,6 +89,14 @@ pub mod math {
         b
     }
 
+    pub fn u64_pow(a: u64, mut b: u64) -> u64 {
+        let mut res: u64 = 1;
+        while b != 0 {
+            res *= a;
+            b -= 1;
+        }
+        res
+    }
     // This modulo always return a positiv value.
     // pub fn negativ_modulo<T: std::cmp::PartialOrd + std::ops::Sub + std::ops::Rem>(a: T, b: T) -> T {
     //     if a {
