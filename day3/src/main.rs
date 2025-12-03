@@ -27,7 +27,6 @@ fn joltage_to_number(joltage: &Vec<u32>) -> u64 {
 fn main() {
     let part = input_lib::get_part();
     let input = input_lib::get_input_as_string(file!(), false);
-
     let mut joltage = Vec::<u32>::new();
 
     for _ in 0..match part {1 => {2}, _ => {12}} {
@@ -43,7 +42,6 @@ fn main() {
         let mut idx: usize = 0;
 
         reset_joltage(&mut joltage);
-
         while idx < bank.len() && !all_nine(&joltage) {
             let current_batterie = bank[idx];
             'outer: for idx_joltage in max(0i32, joltage.len() as i32 - (bank.len() as i32 - idx as i32)) as usize..joltage.len() {
