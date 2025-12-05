@@ -202,8 +202,8 @@ pub mod segment_2d {
 
     impl std::ops::DivAssign<f64> for Vector {
         fn div_assign(&mut self, rhs: f64) {
-            self.x *= rhs;
-            self.y *= rhs;
+            self.x /= rhs;
+            self.y /= rhs;
         }
     }
 
