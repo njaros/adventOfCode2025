@@ -51,12 +51,12 @@ fn main() {
         for x in 0..lines[0].len() {
             let mut number = 0u64;
             for y in 0..lines.len() - 1 {
-                match lines[y].chars().nth(x).unwrap().to_digit(10u32) {
-                    Some(n) => {
+                match lines[y].as_bytes()[x] {
+                    n if n >= b'0' && n <= b'9' => {
                         number *= 10;
-                        number += n as u64;
+                        number += (n - b'0') as u64;
                     },
-                    None => {}
+                    _ => {}
                 }
             }
             if number != 0 {
