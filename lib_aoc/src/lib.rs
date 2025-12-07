@@ -63,7 +63,10 @@ pub mod input_lib {
         let mut buf = String::new();
         let mut input = get_input(path, is_example);
         match input.read_to_string(&mut buf) {
-            Ok(_) => buf,
+            Ok(_) => {
+                buf.retain(|c| c != '\r');
+                buf
+            },
             Err(error) => {
                 panic!("can't convert input to string: {error}")
             }

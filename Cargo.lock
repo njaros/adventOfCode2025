@@ -45,5 +45,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "day7"
+version = "0.1.0"
+dependencies = [
+ "lib_aoc",
+]
+
+[[package]]
 name = "lib_aoc"
 version = "0.1.0"
