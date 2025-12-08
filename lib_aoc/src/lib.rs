@@ -92,6 +92,13 @@ pub mod math {
         b
     }
 
+    pub fn sub_abs<T: std::cmp::PartialOrd + std::ops::Sub + std::ops::Sub<Output = T>>(a: T, b: T) -> T {        
+        if a <= b {
+            return b - a;
+        }
+        a - b
+    }
+
     pub fn u64_pow(a: u64, mut b: u64) -> u64 {
         let mut res: u64 = 1;
         while b != 0 {
@@ -100,13 +107,23 @@ pub mod math {
         }
         res
     }
-    // This modulo always return a positiv value.
-    // pub fn negativ_modulo<T: std::cmp::PartialOrd + std::ops::Sub + std::ops::Rem>(a: T, b: T) -> T {
-    //     if a {
-    //         return b - (a % b);
-    //     }
-    //     a % b
-    // }
+    
+    pub mod distance {
+        use std::iter::IntoIterator;
+
+        //doesn't work atm for unknown reason
+        pub fn manhattan<'a, T, I1, I2>(p1: I1, p2: I2) -> T
+        where 
+            I1: IntoIterator<Item = &'a T>,
+            I2: IntoIterator<Item = &'a T>,
+            T: 'a + std::iter::IntoIterator + Copy + std::iter::Sum + std::cmp::PartialOrd + std::ops::Sub + std::ops::Sub<Output = T>
+        {
+            p1.into_iter()
+            .zip(p2)
+            .map(|(a, b)| super::sub_abs(*a, *b))
+            .sum()
+        }
+    }
 }
 
 /**
