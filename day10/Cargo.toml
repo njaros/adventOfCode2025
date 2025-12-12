@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 itertools = "0.14.0"
 lib_aoc = { path = "../lib_aoc" }
+lp-solvers = "1.1.0"

@@ -1,4 +1,5 @@
 use lib_aoc::input_lib;
+use lp_solvers::{lp_format::{Constraint, LpObjective, LpProblem}, problem::{Problem, StrExpression, Variable}, solvers::{CbcSolver, SolverTrait}};
 use std::collections::VecDeque;
 use itertools::Itertools;
 use lib_aoc::math::u64_pow;
@@ -212,19 +213,107 @@ fn linear_combination_p2(line: &str) -> u64 {
 
 }
 
+fn do_lp_solver_of_shame(line: &str) -> f32 {
+    type Vector = Vec<u8>;
+    
+    let (head, constraints_raw) = line.rsplit_once(' ').unwrap();
+    let (_, vectors_raw) = head.split_once(' ').unwrap();
+    let goal: Vec<u8> = constraints_raw
+    .trim_end_matches('}')
+    .trim_start_matches('{')
+    .split(',')
+    .map(|n| n.parse::<u8>().unwrap())
+    .collect_vec();
+
+    let dim = goal.len();
+
+    let vectors: Vec<Vector> = vectors_raw
+    .split(' ')
+    .fold(Vec::<Vector>::new(), |mut acc, vector_raw| {
+        acc.push(
+            vector_raw
+            .trim_end_matches(')')
+            .trim_start_matches('(')
+            .split(',')
+            .fold(vec![0u8; dim], |mut acc, n| {
+                acc[n.parse::<usize>().unwrap()] = 1;
+                acc
+            })
+        );
+        acc
+    });
+
+    let mut objective_vec = Vec::<String>::new();
+
+    let variables: Vec::<Variable> = (0..vectors.len())
+    .fold(Vec::<Variable>::new(), |mut acc, n| {
+        let mut name = String::from("btn");
+        objective_vec.push(name.clone());
+        name.push_str(n.to_string().as_str());
+        acc.push(Variable {
+            name: name,
+            is_integer: true,
+            lower_bound: 0.,
+            upper_bound: 100.
+        });
+        acc
+    });
+
+    let objective = StrExpression(objective_vec.iter().join(" + "));
+    
+    let constraints: Vec<Constraint<StrExpression>> = goal
+    .iter()
+    .enumerate()
+    .map(|(idx, &g)| {
+        let mut expr_vec = Vec::<String>::new();
+        for i in 0..vectors.len() {
+            if vectors[i][idx] != 0 {
+                expr_vec.push(objective_vec[i].clone());
+            }
+        }
+        Constraint {
+            lhs: StrExpression(expr_vec.iter().join(" + ")),
+            operator: std::cmp::Ordering::Equal,
+            rhs: g as f64
+        }
+    })
+    .collect_vec();
+
+    let solver = CbcSolver::default();
+    let pb = Problem {
+        name: String::from("aoc_solver"),
+        sense: LpObjective::Minimize,
+        objective: objective,
+        variables: variables,
+        constraints: constraints
+    };
+
+    let solution = solver.run(&pb);
+    solution.expect("fail").results.into_values().sum()
+}
+
 fn main() {
     let part = input_lib::get_part();
     let mut input = input_lib::get_input_as_string(file!(), false);
 
     input.retain(|c| c != '\r');
 
-    let result = input
-    .split('\n')
-    .fold(0u64, |acc, line| {
-        acc + match part {
-            1 => bfs_p1(line),
-            _ => linear_combination_p2(line)
+    match part {
+        1 => {
+            let result = input
+            .split('\n')
+            .fold(0u64, |acc, line| {
+                acc + bfs_p1(line)
+            });
+            println!("{result}");
         }
-    });
-    println!("{result}");
+        _ => {
+            let result = input
+            .split('\n')
+            .fold(0f32, |acc, line| {
+                acc + do_lp_solver_of_shame(line)
+            });
+            println!("{result}");
+        }
+    }
 }
