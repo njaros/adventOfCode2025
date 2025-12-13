@@ -21,19 +21,18 @@ fn seg_intersect_rectangle(segment: &Vec<(u64, u64)>, rectangle: &Vec<&(u64, u64
         // potentially cutting
         if a.1 > min_y && a.1 < max_y {
             let (min_seg_x, max_seg_x) = reorder_points(a.0, b.0);
-            return !(max_seg_x < min_x || min_seg_x > max_x);
+            return !(max_seg_x <= min_x || min_seg_x >= max_x);
         }
-        return false;
     }
     //is vertical
     else {
         // potentially cutting
         if a.0 > min_x && a.0 < max_y {
             let (min_seg_y, max_seg_y) = reorder_points(a.1, b.1);
-            return !(max_seg_y < min_y || min_seg_y > max_y);
+            return !(max_seg_y <= min_y || min_seg_y >= max_y);
         }
-        return false;
     }
+    false
 }
 fn main() {
     let part = input_lib::get_part();
